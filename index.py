@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, send_file
 import qrcode
+from qrcode.image.styledpil import StyledPilImage
+import qrcode.image.styles.moduledrawers as md
 from io import BytesIO
 
 app = Flask(__name__)
@@ -7,10 +9,6 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
-
-@app.route('/api')
-def api():
-    return 'api'
 
 # Basic QR Code
 @app.route('/api/basic/qr', methods=['POST'])
@@ -61,6 +59,43 @@ def generate_color_customized_qr_code():
         qr.make(fit=True)
 
         img = qr.make_image(fill_color=fill_color, back_color=back_color)
+        img_io = BytesIO()
+        img.save(img_io, 'PNG')
+        img_io.seek(0)
+
+        return send_file(img_io, mimetype='image/png')
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+# Styled QR Code
+@app.route('/api/styled/qr', methods=['POST'])
+def generate_styled_qr_code():
+    try:
+        data = request.json.get('text', '')
+        fill_color = request.json.get('fill_color', 'black')
+        back_color = request.json.get('back_color', 'white')
+        module_shape = request.json.get('module_shape', 'default')
+
+        if not data:
+            return jsonify({'error': 'No text provided'}), 400
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(data)
+        qr.make(fit=True)
+
+        if module_shape == 'rounded':
+            img = qr.make_image(image_factory=StyledPilImage, module_drawer=md.RoundedModuleDrawer(), fill_color=fill_color, back_color=back_color)
+        elif module_shape == 'dots':
+            img = qr.make_image(image_factory=StyledPilImage, module_drawer=md.CircleModuleDrawer(), fill_color=fill_color, back_color=back_color)
+        else:
+            img = qr.make_image(fill_color=fill_color, back_color=back_color)
+
         img_io = BytesIO()
         img.save(img_io, 'PNG')
         img_io.seek(0)
