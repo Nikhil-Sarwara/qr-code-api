@@ -73,7 +73,7 @@ def generate_color_customized_qr_code():
 def generate_styled_qr_code():
     try:
         data = request.json.get('text', '')
-        fill_color = request.json.get('fill_color', 'black')
+        fill_color = request.json.get('fill_color', 'blue')
         back_color = request.json.get('back_color', 'white')
         module_shape = request.json.get('module_shape', 'default')
 
@@ -84,17 +84,27 @@ def generate_styled_qr_code():
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
-            border=4,
+            border=4
         )
+
         qr.add_data(data)
         qr.make(fit=True)
 
+        img = qr.make_image(fill_color=fill_color, back_color=back_color)
         if module_shape == 'rounded':
-            img = qr.make_image(image_factory=StyledPilImage, module_drawer=md.RoundedModuleDrawer(), fill_color=fill_color, back_color=back_color)
-        elif module_shape == 'dots':
-            img = qr.make_image(image_factory=StyledPilImage, module_drawer=md.CircleModuleDrawer(), fill_color=fill_color, back_color=back_color)
+            img = StyledPilImage(img, md.RoundedModuleDrawer())
+        elif module_shape == 'circle':
+            img = StyledPilImage(img, md.CircleModuleDrawer())
+        elif module_shape == 'square':
+            img = StyledPilImage(img, md.SquareModuleDrawer())
+        elif module_shape == 'gapped-square':
+            img = StyledPilImage(img, md.GappedSquareModuleDrawer())
+        elif module_shape == 'vertical-bars':
+            img = StyledPilImage(img, md.VerticalBarsDrawer())
+        elif module_shape == 'horizontal-bars':
+                img = StyledPilImage(img, md.HorizontalBarsDrawer())
         else:
-            img = qr.make_image(fill_color=fill_color, back_color=back_color)
+            img = StyledPilImage(img, md.SquareModuleDrawer())
 
         img_io = BytesIO()
         img.save(img_io, 'PNG')
