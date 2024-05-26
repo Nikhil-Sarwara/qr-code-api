@@ -45,6 +45,9 @@ def generate_qr_code():
 def generate_color_customized_qr_code():
     try:
         data = request.json.get('text', '')
+        fill_color = request.json.get('fill_color', 'blue')
+        back_color = request.json.get('back_color', 'white')
+
         if not data:
             return jsonify({'error': 'No text provided'}), 400
 
@@ -57,7 +60,7 @@ def generate_color_customized_qr_code():
         qr.add_data(data)
         qr.make(fit=True)
 
-        img = qr.make_image(fill_color="blue", back_color="white")
+        img = qr.make_image(fill_color=fill_color, back_color=back_color)
         img_io = BytesIO()
         img.save(img_io, 'PNG')
         img_io.seek(0)
