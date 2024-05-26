@@ -37,9 +37,10 @@ def generate_qr_code():
         return send_file(img_io, mimetype='image/png')
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 400
 
 # Color Customized QR Code
+# Default Color Blue
 @app.route('/api/color-customized/qr', methods=['POST'])
 def generate_color_customized_qr_code():
     try:
@@ -64,7 +65,7 @@ def generate_color_customized_qr_code():
         return send_file(img_io, mimetype='image/png')
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
