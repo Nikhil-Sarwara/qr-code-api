@@ -6,6 +6,17 @@ info:
 schemes:
   - "http"
 paths:
+  /api/basic/qr:
+    post:
+      tags:
+        - "QR Code"
+      summary: "Generate a basic QR code"
+      consumes:
+        - "application/json"
+      produces:
+        - "image/png"
+      parameters:
+        -
   /api/advanced/qr:
     post:
       tags:

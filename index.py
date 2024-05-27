@@ -10,12 +10,14 @@ from PIL import Image
 app = Flask(__name__)
 swagger = Swagger(app)
 
+# Home Page
 @app.route('/')
 def home():
     return render_template('index.html')
 
 # Basic QR Code
 @app.route('/api/basic/qr', methods=['POST'])
+@swag_from('config/swagger_config.yml')
 def generate_qr_code():
     try:
         data = request.json.get('text', '')
