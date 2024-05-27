@@ -2,6 +2,7 @@ from flask import Flask, request, send_file, jsonify
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
 import qrcode.image.styles.moduledrawers as md
+import qrcode.image.styles.colormasks as cm
 from io import BytesIO
 
 app = Flask(__name__)
@@ -44,6 +45,7 @@ def generate_advanced_qr_code():
         data = request.json.get('text', '')
         fill_color = tuple(request.json.get('fill_color', [0, 0, 0]))
         back_color = tuple(request.json.get('back_color', [255, 255, 255]))
+        gradient = request.json.get('gradient', False)
         module_shape = request.json.get('module_shape', 'default')
         eye_shape = request.json.get('eye_shape', 'default')
 
@@ -82,15 +84,25 @@ def generate_advanced_qr_code():
         elif eye_shape == 'dots':
             eye_drawer = md.CircleModuleDrawer()
 
+        # Set color mask
+        if gradient:
+            color_mask = cm.RadialGradiantColorMask(
+                back_color=back_color,
+                center_color=fill_color,
+                edge_color=(255, 255, 255)
+            )
+        else:
+            color_mask = cm.SolidFillColorMask(
+                front_color=fill_color,
+                back_color=back_color
+            )
+
         # Generate the QR code image with the specified drawers and colors
         img = qr.make_image(
             image_factory=StyledPilImage,
             module_drawer=module_drawer,
             eye_drawer=eye_drawer,
-            color_mask=qrcode.image.styles.colormasks.SolidFillColorMask(
-                front_color=fill_color,
-                back_color=back_color
-            )
+            color_mask=color_mask
         )
 
         img_io = BytesIO()
