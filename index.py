@@ -45,7 +45,7 @@ def generate_advanced_qr_code():
         data = request.json.get('text', '')
         fill_color = tuple(request.json.get('fill_color', [0, 0, 0]))
         back_color = tuple(request.json.get('back_color', [255, 255, 255]))
-        gradient = request.json.get('gradient', False)
+        gradient_type = request.json.get('gradient_type', 'none')
         module_shape = request.json.get('module_shape', 'default')
         eye_shape = request.json.get('eye_shape', 'default')
 
@@ -84,12 +84,25 @@ def generate_advanced_qr_code():
         elif eye_shape == 'dots':
             eye_drawer = md.CircleModuleDrawer()
 
-        # Set color mask
-        if gradient:
+        # Set color mask based on gradient type
+        color_mask = None
+        if gradient_type == 'radial':
             color_mask = cm.RadialGradiantColorMask(
                 back_color=back_color,
                 center_color=fill_color,
                 edge_color=(255, 255, 255)
+            )
+        elif gradient_type == 'horizontal':
+            color_mask = cm.HorizontalGradiantColorMask(
+                back_color=back_color,
+                left_color=fill_color,
+                right_color=(255, 255, 255)
+            )
+        elif gradient_type == 'vertical':
+            color_mask = cm.VerticalGradiantColorMask(
+                back_color=back_color,
+                top_color=fill_color,
+                bottom_color=(255, 255, 255)
             )
         else:
             color_mask = cm.SolidFillColorMask(
