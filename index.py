@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, send_file, jsonify, render_template
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
 import qrcode.image.styles.moduledrawers as md
@@ -9,8 +9,8 @@ from PIL import Image
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def home():
+    return render_template('index.html')
 
 # Basic QR Code
 @app.route('/api/basic/qr', methods=['POST'])
