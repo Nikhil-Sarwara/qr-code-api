@@ -43,7 +43,7 @@ def generate_qr_code():
 
 # Color Customized QR Code
 @app.route('/api/advanced/qr', methods=['POST'])
-@swag_from('swagger_config.yml')
+@swag_from('config/swagger_config.yml')
 def generate_advanced_qr_code():
     try:
         data = request.json.get('text', '')
