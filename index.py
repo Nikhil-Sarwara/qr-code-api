@@ -4,6 +4,7 @@ from qrcode.image.styledpil import StyledPilImage
 import qrcode.image.styles.moduledrawers as md
 import qrcode.image.styles.colormasks as cm
 from io import BytesIO
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -48,6 +49,7 @@ def generate_advanced_qr_code():
         gradient_type = request.json.get('gradient_type', 'none')
         module_shape = request.json.get('module_shape', 'default')
         eye_shape = request.json.get('eye_shape', 'default')
+        logo_path = request.json.get('logo_path', None)
 
         if not data:
             return jsonify({'error': 'No text provided'}), 400
@@ -118,6 +120,11 @@ def generate_advanced_qr_code():
             color_mask=color_mask
         )
 
+        # Add logo if provided
+        if logo_path:
+            logo = Image.open(logo_path)
+            img = add_logo(img, logo)
+
         img_io = BytesIO()
         img.save(img_io, 'PNG')
         img_io.seek(0)
@@ -130,6 +137,7 @@ def generate_advanced_qr_code():
 if __name__ == '__main__':
     app.run(debug=True)
 
+# Add logo to QR code
 def add_logo(qr_img, logo):
     # Calculate the size of the logo
     qr_width, qr_height = qr_img.size
