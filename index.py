@@ -129,3 +129,15 @@ def generate_advanced_qr_code():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+def add_logo(qr_img, logo):
+    # Calculate the size of the logo
+    qr_width, qr_height = qr_img.size
+    logo_size = int(qr_width / 4)
+    logo = logo.resize((logo_size, logo_size))
+
+    # Position the logo in the center of the QR code
+    pos = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
+    qr_img.paste(logo, pos, logo)
+    
+    return qr_img
