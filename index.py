@@ -1,4 +1,5 @@
 from flask import Flask, request, send_file, jsonify, render_template
+from flasgger import Swagger, swag_from
 import qrcode
 from qrcode.image.styledpil import StyledPilImage
 import qrcode.image.styles.moduledrawers as md
@@ -7,6 +8,7 @@ from io import BytesIO
 from PIL import Image
 
 app = Flask(__name__)
+swagger = Swagger(app)
 
 @app.route('/')
 def home():
@@ -41,6 +43,7 @@ def generate_qr_code():
 
 # Color Customized QR Code
 @app.route('/api/advanced/qr', methods=['POST'])
+@swag_from('swagger_config.yml')
 def generate_advanced_qr_code():
     try:
         data = request.json.get('text', '')

@@ -1,0 +1,19 @@
+swagger: "2.0"
+info:
+  title: "QR Code Generator Backend API"
+  description: "API endpoints for generating customized QR codes"
+  version: "1.0.0"
+schemes:
+  - "http"
+paths:
+  /api/advanced/qr:
+    post:
+      tags:
+        - "QR Code"
+      summary: "Generate a customized QR code"
+      consumes:
+        - "application/json"
+      produces:
+        - "image/png"
+      parameters:
+        -
