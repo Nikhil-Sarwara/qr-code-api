@@ -5,7 +5,6 @@ import qrcode.image.styles.moduledrawers as md
 import qrcode.image.styles.colormasks as cm
 from io import BytesIO
 from PIL import Image
-import requests
 
 app = Flask(__name__)
 
@@ -118,14 +117,8 @@ def generate_advanced_qr_code():
             image_factory=StyledPilImage,
             module_drawer=module_drawer,
             eye_drawer=eye_drawer,
-            color_mask=color_mask
+            color_mask=color_mask,
         )
-
-        # Add logo if provided
-        if logo_url:
-            response = requests.get(logo_url)
-            logo = Image.open(BytesIO(response.content))
-            img = add_logo(img, logo)
 
         img_io = BytesIO()
         img.save(img_io, 'PNG')
