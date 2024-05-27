@@ -5,6 +5,7 @@ import qrcode.image.styles.moduledrawers as md
 import qrcode.image.styles.colormasks as cm
 from io import BytesIO
 from PIL import Image
+import requests
 
 app = Flask(__name__)
 
@@ -49,7 +50,7 @@ def generate_advanced_qr_code():
         gradient_type = request.json.get('gradient_type', 'none')
         module_shape = request.json.get('module_shape', 'default')
         eye_shape = request.json.get('eye_shape', 'default')
-        logo_path = request.json.get('logo_path', None)
+        logo_url = request.json.get('logo_url', None)
 
         if not data:
             return jsonify({'error': 'No text provided'}), 400
@@ -121,8 +122,9 @@ def generate_advanced_qr_code():
         )
 
         # Add logo if provided
-        if logo_path:
-            logo = Image.open(logo_path)
+        if logo_url:
+            response = requests.get(logo_url)
+            logo = Image.open(BytesIO(response.content))
             img = add_logo(img, logo)
 
         img_io = BytesIO()
@@ -139,13 +141,21 @@ if __name__ == '__main__':
 
 # Add logo to QR code
 def add_logo(qr_img, logo):
+    # Ensure logo has an alpha layer
+    if logo.mode in ('RGBA', 'LA') or (logo.mode == 'P' and 'transparency' in logo.info):
+        alpha = logo.convert('RGBA').split()[3]
+        logo = logo.convert('RGB').convert('RGBA')
+        logo.putalpha(alpha)
+    else:
+        logo = logo.convert('RGBA')
+
     # Calculate the size of the logo
     qr_width, qr_height = qr_img.size
     logo_size = int(qr_width / 4)
-    logo = logo.resize((logo_size, logo_size))
+    logo = logo.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
 
     # Position the logo in the center of the QR code
     pos = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
     qr_img.paste(logo, pos, logo)
-    
+
     return qr_img
