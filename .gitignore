@@ -1,1 +1,5 @@
+# Ignore everything
 .vercel
+
+# But not these files:
+!.gitignore
