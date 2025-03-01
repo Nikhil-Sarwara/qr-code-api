@@ -1,6 +1,5 @@
 @QrCodeApi_HostAddress = http://localhost:5008
 
-GET {{QrCodeApi_HostAddress}}/weatherforecast/
+GET {{QrCodeApi_HostAddress}}/api/QrCode?data=DeakinStudent&size=30
 Accept: application/json
-
 ###
