@@ -1,5 +1,6 @@
 # Ignore everything
 .vercel
+.DS_Store
 
 # But not these files:
 !.gitignore
